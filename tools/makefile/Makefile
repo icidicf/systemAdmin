@@ -24,4 +24,6 @@ new_header:
 clean:
 	rm -f $(TARGET) $(OBJECT) version.h
 
+lyp:
+	@echo hello lyp
 .PHONY: all clean
