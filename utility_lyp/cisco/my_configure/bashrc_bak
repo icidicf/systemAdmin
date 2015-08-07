@@ -1,0 +1,10 @@
+alias sc='source ~/.bashrc'
+alias py='cd /git/python'
+alias cur="cd /ws/shell/vim/sourcecode/code"
+alias ng="cd /git/nginx/src"
+alias bin='cd /usr/local/bin'
+set wildmode=longest,list
+
+alias ga="git add"
+alias gc='git commit' 
+a

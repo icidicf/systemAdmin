@@ -1,0 +1,17 @@
+alias bashcfg='vim ~/.lypbashconfigure'
+alias sc='source ~/.lypbashconfigure'
+alias py='cd /git/python'
+alias cur="cd /ws/shell/vim/sourcecode/code"
+alias ng="cd /git/nginx/src"
+alias bin='cd /usr/local/bin'
+set wildmode=longest,list
+
+
+
+
+#backup file
+alias syncvimrc='cp ~/.vimrc /git/llehs/my_configure/company_ununtu_vimrc.bak'
+alias syncbashrc='cp ~/.lypbashconfigure /git/llehs/my_configure/company_ununtu_bashrc.bak'
+
+alias ga="git add"
+alias gc='git commit'
