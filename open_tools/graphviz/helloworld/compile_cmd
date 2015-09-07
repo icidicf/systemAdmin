@@ -1,0 +1,4 @@
+#!/bin/bash
+dot -T png helloworld.dot -o hello.png
+
+eog hello.png
