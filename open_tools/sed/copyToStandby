@@ -1,0 +1,19 @@
+copy bootflash:/lanhu/cbrsup-cciomdsup.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-clc-firmware.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-clccontrol.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-clcdocsis.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-clcios.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-clciosdb.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-clcmipsbase.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-clcvideo.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-espx86base.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-packages-universalk9.2015-09-28_06.45_jelou.conf stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-rp-firmware.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-rp-programmable-firmware.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-rpaccess.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-rpbase.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-rpcontrol.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-rpios-universalk9.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/cbrsup-rpvideo.2015-09-28_06.45_jelou.SSA.pkg stby-bootflash:/lanhu/
+copy bootflash:/lanhu/packages.conf stby-bootflash:/lanhu/
+
