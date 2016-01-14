@@ -1,0 +1,358 @@
+"ver 2010.06.04
+set nocompatible
+filetype plugin on
+set bs=2
+set background=dark
+set tabstop=4
+"set wrapmargin=8
+set nobk
+set ruler
+set expandtab
+set hls
+set shiftwidth=4
+set mouse=a
+"set textwidth=80
+set formatoptions+=mM
+set diffopt=filler,context:5,iwhite
+set display=lastline
+"set iskeyword+=:
+set complete+=k~/.vim_extras/perl_module_lists
+"echo v:version
+"set foldmethod=indent
+"set foldcolumn=4
+nnoremap <silent> <F2> :TlistToggle<CR>
+"nnoremap <buffer> <CR> 0ye<C-W>w:tag <C-R>"<CR>
+syntax on
+"set Tlist_Ctags_Cmd=/usr/cisco/bin/ctags
+"set guioptions-=T
+"set guioptions-=m
+let &guioptions='aegiRLtTm'
+set shm+=I  "avoid ntroductory flash screen
+set ve+=block
+
+if has("cscope")
+  set csprg=/router/bin/cscope
+  set csto=0
+  set cst
+  set nocsverb
+  "set cscopequickfix=s-,c-,d-,i-,t-,e-
+  set cscopequickfix=c-,d-,e-,g-,i-,s-,t-
+  set cspc=3
+  "cs add ~/.k/cscope.out
+      " add any database in current directory
+  if filereadable("cscope.out") && filereadable("cscope.in.out") &&  filereadable("cscope.po.out")
+     cs add cscope.out
+     " else add database pointed to by environment
+  elseif filereadable("../cscope.out") && filereadable("../cscope.in.out") &&  filereadable("../cscope.po.out")
+     cs add .. ..
+  elseif filereadable("../../cscope.out") && filereadable("../../cscope.in.out") &&  filereadable("../../cscope.po.out")
+     cs add ../.. ../..
+  elseif filereadable("../../../cscope.out") && filereadable("../../../cscope.in.out") &&  filereadable("../../../cscope.po.out")
+     cs add ../../.. ../../..
+  elseif filereadable("../../../../cscope.out") && filereadable("../../../../cscope.in.out") &&  filereadable("../../../../cscope.po.out")
+     cs add ../../../.. ../../../..
+  elseif filereadable("../../../../../cscope.out") && filereadable("../../../../../cscope.in.out") &&  filereadable("../../../../../cscope.po.out")
+     cs add ../../../../.. ../../../../..
+  elseif filereadable("../../../../../../cscope.out") && filereadable("../../../../../../cscope.in.out") &&  filereadable("../../../../../../cscope.po.out")
+     cs add ../../../../../.. ../../../../../..
+  elseif filereadable("../../../../../../../cscope.out") && filereadable("../../../../../../../cscope.in.out") &&  filereadable("../../../../../../../cscope.po.out")
+     cs add ../../../../../../.. ../../../../../../..
+  elseif filereadable("../../../../../../../../cscope.out") && filereadable("../../../../../../../../cscope.in.out") &&  filereadable("../../../../../../../../cscope.po.out")
+     cs add ../../../../../../../.. ../../../../../../../..
+  elseif $CSCOPE_DB != ""
+    cs add $CSCOPE_DB
+  endif
+  set csverb
+
+  "map <C-_> :cstag <C-R>=expand("<cword>")<CR><CR>
+  map <C-\> :let csword = expand("<cword>")<CR>:execute "cstag " . csword<bar>:execute "match Search /\\<" . csword . "\\>/"<CR>:let @/ = "\\<" . csword . "\\>"<CR><C-l>
+  "map g<C-]> :cs find 3 <C-R>=expand("<cword>")<CR><CR>
+  map g<C-]> :let csword = expand("<cword>")<CR>:execute "cs find 3 " . csword<bar>:execute "match Search /\\<" . csword . "\\>/"<CR>:let @/ = "\\<" . csword . "\\>"<CR><C-l>
+  "map g<C-\> :cs find 0 <C-R>=expand("<cword>")<CR><CR>
+  map g<C-\> :let csword = expand("<cword>")<CR>:execute "cs find 0 " . csword<bar>:execute "match Search /\\<" . csword . "\\>/"<CR>:let @/ = "\\<" . csword . "\\>"<CR><C-l>
+  "nmap <C-_>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-\>s :let csword = expand("<cword>")<CR>:execute "cs find s " . csword<bar>:execute "match Search /\\<" . csword . "\\>/"<CR>:let @/ = "\\<" . csword . "\\>"<CR><C-l>
+  "nmap <C-_>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-\>g :let csword = expand("<cword>")<CR>:execute "cs find g " . csword<bar>:execute "match Search /\\<" . csword . "\\>/"<CR>:let @/ = "\\<" . csword . "\\>"<CR><C-l>
+  "nmap <C-_>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-\>c :let csword = expand("<cword>")<CR>:execute "cs find c " . csword<bar>:execute "match Search /\\<" . csword . "\\>/"<CR>:let @/ = "\\<" . csword . "\\>"<CR><C-l>
+  "nmap <C-_>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-\>t :let csword = expand("<cword>")<CR>:execute "cs find t " . csword<bar>:execute "match Search /\\<" . csword . "\\>/"<CR>:let @/ = "\\<" . csword . "\\>"<CR><C-l>
+  nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+  nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+  "nmap <C-_>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+  nmap <C-\>d :let csword = expand("<cword>")<CR>:execute "cs find d " . csword<bar>:execute "match Search /\\<" . csword . "\\>/"<CR>:let @/ = "\\<" . csword . "\\>"<CR><C-l>
+
+  nmap <silent> <C-\>r :let csword = expand("<cword>")<CR>:if stridx(csword,"reg_add_") == 0<CR>let prefix = "reg_invoke_"<CR>elseif stridx(csword,"reg_invoke_") == 0<CR>let prefix = "reg_add_"<CR>else<CR>let prefix = ""<CR>endif<CR>:if prefix != ""<CR>let reg_word = substitute(csword,"reg_[^_]\\+_\\(.*\\)", "\\1", "")<CR>let find_word = prefix . reg_word<CR>else<CR>let find_word = csword<CR>endif<CR>:execute "cs find s " . find_word<CR>:execute "match Search /\\<" . find_word . "\\>/"<CR>:let @/ = "\\<" . find_word . "\\>"<CR>
+
+  nmap <silent> <C-\>o <C-o>:cold<CR><CR>
+
+"availabe in the case of pop window mode"
+  "nmap <silent> <C-\>r :let csword = expand("<cword>")<CR>:if stridx(csword,"reg_add_") == 0<CR>let prefix = "reg_invoke_"<CR>elseif stridx(csword,"reg_invoke_") == 0<CR>let prefix = "reg_add_"<CR>else<CR>let prefix = ""<CR>endif<CR>:if prefix != ""<CR>let reg_word = substitute(csword,"reg_[^_]\\+_\\(.*\\)", "\\1", "")<CR>let find_word = prefix . reg_word<CR>else<CR>let find_word = csword<CR>endif<CR>:execute "cs find s " . find_word<CR>
+
+  "nmap <C-_>m :call Csfinds()<bar>execute "match Search /\\%" . line(".") . "l\\<" . g:tofind . "\\>/"<CR>
+  "nmap <C-_>n :let test = expand("<cword>")<CR>:execute "cs find g " . test<bar>:execute "match Search /\\%" . line(".") . "l\\<" . test . "\\>/"<CR>
+  "function! Csfinds()
+  "  let g:tofind = expand("<cword>")
+  "  execute "cs find g " . g:tofind
+  "endfun
+  let g:qfopen=0
+  let g:nerdtree=0
+  nmap g<LeftMouse> :let test = expand("<cword>")<CR><C-]><bar>:execute "match Search /\\%" . line(".") . "l\\<" . test . "\\>/"<CR>
+  nmap f<LeftMouse> <C-_>c
+  nmap f<RightMouse> <C-O>
+  nmap <F10> :clist<CR>
+  nmap <F9> :if g:qfopen == 0<CR>let g:qfopen=1<CR>copen<CR>else<CR>let g:qfopen=0<CR>cclose<CR>endif<CR><CR>
+  nmap <C-F9> :if g:qfopen == 1<CR>col<CR>endif<CR><CR>
+  nmap <M-F9> :if g:qfopen == 1<CR>cnew<CR>endif<CR><CR>
+  nmap <F7> :cn<CR>
+  nmap <F8> :cp<CR>
+  nmap <F3> :tabN<CR>
+  nmap <F4> :FufBuffer<CR>
+  nmap <C-F3> :close!<CR>
+  nnoremap <silent> <F11> :if &guioptions =~# 'T'<Bar>
+                           \set guioptions-=T<Bar>
+                           \else<Bar>
+                           \set guioptions+=T<Bar>
+                           \endif<CR>
+  nnoremap <silent> <F12> :if &guioptions =~# 'm'<Bar>
+                           \set guioptions-=m<Bar>
+                           \else<Bar>
+                           \set guioptions+=m<Bar>
+                           \endif<CR>
+  nmap <F6> :if g:nerdtree == 0<CR>let g:nerdtree=1<CR>NERDTree<CR>else<CR>let g:nerdtree=0<CR>NERDTreeClose<CR>endif<CR><CR>
+ " nmap <silent> gc  :let cword = expand("<cword>")<CR>:if stridx(cword,"reg_") == 0<CR>let regword = substitute(cword,"reg_[^_]\\+_\\(.*\\)", "\\1", "")<CR>call cursor(0,1)<CR>else<CR>let regword = cword<CR>endif<CR>:let save_cur = getpos(".")<CR>:execute "/reg_[^_]*_" . regword<CR>:call setpos(".",save_cur)<CR>
+  nmap <silent> gc  :let cword = expand("<cword>")<CR>:if stridx(cword,"reg_") == 0<CR>let regword = substitute(cword,"reg_[^_]\\+_\\(.*\\)", "\\1", "")<CR>:execute "match Search /reg_[^_]*_" . regword . "/"<CR>let @/ = "reg_[^_]*_" . regword<CR>else<CR>execute "match Search /" . cword . "/"<CR>let @/ = cword<CR>endif<CR>
+  nmap <silent> gb :let save_clp = getreg(0)<CR>y/\w\+/e<CR>:let cword = getreg(0)<CR>:execute "match Search /" . cword . "/"<CR>:let @/ = cword<CR>:call setreg(0, save_clp)<CR>
+  nmap <silent> gl :execute "match Search /\\%" . line(".") . "l.*$/"<CR>
+
+":map  <MouseDown>
+":map!  <MouseDown>
+":map  <MouseUp>
+":map!  <MouseUp>
+":map <M-Esc>[64~ <S-MouseDown>
+":map! <M-Esc>[64~ <S-MouseDown>
+":map <M-Esc>[65~ <S-MouseUp>
+":map! <M-Esc>[65~ <S-MouseUp>
+
+":map <MouseDown> <C-Y>
+":map <S-MouseDown> <C-U>
+":map <MouseUp> <C-E>
+":map <S-MouseUp> <C-D>
+
+
+func SwitchQuickFix()
+  if &cscopequickfix !~ 's-'
+    "let &cscopequickfix="s-,c-,d-,i-,t-,e-"
+    let &cscopequickfix="c-,d-,e-,g-,i-,s-,t-"
+    "execute 'set cscopequickfix=s-,c-,d-,i-,t-,e-'
+  else
+    "execute 'set cscopequickfix='
+    let &cscopequickfix=""
+  endif
+endfun
+
+  nmap <C-x> :call SwitchQuickFix()<CR><C-l><CR>
+endif
+
+"au! CursorHold *.[ch] nested call PreviewWord()
+func PreviewWord()
+  if &previewwindow          "
+    return
+  endif
+  let w = expand("<cword>")      "
+  if w =~ '\a'           "
+
+    "
+    silent! wincmd P         "
+    if &previewwindow        "
+      match none         "
+      wincmd p           "
+    endif
+
+    "
+    try
+       exe "ptag " . w
+    catch
+      return
+    endtry
+
+    silent! wincmd P         "
+    if &previewwindow        "
+  if has("folding")
+    silent! .foldopen        "
+  endif
+  call search("$", "b")      "
+  let w = substitute(w, '\\', '\\\\', "")
+  call search('\<\V' . w . '\>') "
+  "
+      hi previewWord term=bold ctermbg=green guibg=green
+  exe 'match previewWord "\%' . line(".") . 'l\%' . col(".") . 'c\k*"'
+      wincmd p           "
+    endif
+  endif
+endfun
+
+function GuiTabLabel()
+  let label = ''
+  let bufnrlist = tabpagebuflist(v:lnum)
+
+  " Add '+' if one of the buffers in the tab page is modified
+  for bufnr in bufnrlist
+    if getbufvar(bufnr, "&modified")
+      let label = '+'
+      break
+    endif
+  endfor
+
+  " Append the number of windows in the tab page if more than one
+  let wincount = tabpagewinnr(v:lnum, '$')
+  if wincount > 1
+    let label .= wincount
+  endif
+  if label != ''
+    let label .= ' '
+  endif
+
+  " Append the buffer name
+  return label . bufname(bufnrlist[tabpagewinnr(v:lnum) - 1])
+endfunction
+
+"set guitablabel=%{GuiTabLabel()}
+"set guitablabel=
+set tabpagemax=50
+
+if !exists('*ID_search')
+    runtime solaris/id_search.vim
+endif
+
+map _u :call ID_search()<Bar>execute "/\\<" . g:word . "\\>"<CR>
+map _n :n<Bar>execute "/\\<" . g:word . "\\>"<CR>
+
+command WW :!doalias vtp sync_in %
+command W :w
+command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+
+func AppendFuncName()
+    let cmd = getcmdline() . TagName()
+    call setcmdpos(strlen(cmd)+1)
+    return cmd
+endfunc
+
+func AppendFileName()
+    let cmd = getcmdline() . expand("%")
+    call setcmdpos(strlen(cmd)+1)
+    return cmd
+endfunc
+
+cmap <c-r><c-x> <c-\>eAppendFuncName()<CR>
+imap <c-r><c-x> <ESC>:let @a=TagName()<CR><ESC>"apa
+nmap <c-r><c-x> <ESC>:let @*=TagName()<CR><CR>
+cmap <c-r><c-z> <c-\>eAppendFileName()<CR>
+imap <c-r><c-z> <ESC>:let @a=expand("%")<CR><ESC>"apa
+nmap <c-r><c-z> <ESC>:let @*=expand("%:t")<CR><CR>
+"let g:ctags_path='/usr/cisco/bin/ctags'
+let g:ctags_path='ctags'
+let g:ctags_statusline=1
+let g:ctags_args='-I __declspec+'
+let g:ctags_title=1
+let g:generate_tags=1
+let psc_style='warm'
+"colorscheme xemacs
+if has("gui_running")
+"    colorscheme metacosm
+     let psc_style='cool'
+     colorscheme ps_color
+     imap <s-insert> <ESC>"+pa
+     nmap <s-insert> "+p
+     cmap <s-insert> <MiddleMouse>
+
+     if $VIM !~ "/users/yunzshi/bin/"
+         set guifont=LucidaTypewriter\ 11
+     elseif $VIM !~ '/users/yunzshi/bin/linux'
+         set guifont=-b&h-lucidatypewriter-medium-r-normal-sans-12-120-75-75-m-70-iso8859-1
+     else
+         set guifont=LucidaTypewriter\ 9
+"Monospace\ 11
+
+     endif
+else
+    colorscheme ps_color
+endif
+source ~/.vim/plugin/mark.vim
+
+"setting auto folding.
+"au BufReadPost *.h,*.c,*.cpp,*.java,*.pl    syn region myFold start="{" end="}" transparent fold
+"au BufReadPost *.h,*.c,*.cpp,*.java,*.pl    syn sync fromstart
+"au BufReadPost *.h,*.c,*.cpp,*.java,*.pl    set foldmethod=syntax
+"set foldlevel=0
+"set foldmarker={,}
+"set foldmethod=marker
+"set foldlevel=100 " Don't autofold anything (but I can still fold manually)
+"set foldopen-=search " don't open folds when you search into them
+"set foldopen-=undo " don't open folds when you undo stuff
+
+command -nargs=0 LS :caddexpr expand("%") . ":" . line(".") .  ":" . getline(".")
+"often used for g/<pat>/LS, in quickfix win. CQ is used to clear quickfix win"
+command -nargs=0 CQ :cgete []
+command -nargs=0 NX :silent !myvim -g "%" &
+command -nargs=0 WQ :mksession! def.session <BAR>wviminfo! def.viminfo<BAR>q
+command -nargs=0 LD :source def.session <BAR>rviminfo def.viminfo
+
+"if ($OSTYPE != 'linux' )
+"    command -nargs=0 NX :silent !/users/yunzshi/bin/solaris/vim -g "%" &
+"else
+"    command -nargs=0 NX :silent !/users/yunzshi/bin/linux/vim -g "%" &
+"endif
+
+au BufNewFile,BufRead *.[ch] 2match Error /\%>80v/
+
+" Suggested map for gtags
+map <C-\>^G :Gozilla<CR>
+map <C-\> :GtagsCursor<CR><CR>
+"map <C-n> :cn<CR>
+"map <C-p> :cp<CR>
+
+highlight NonText guifg=bg guibg=bg "avoid tilde
+
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+
+" When editing a file, always jump to the last known cursor position.
+" Don't do it when the position is invalid or when inside an event handler
+" (happens when dropping a file on gvim).
+autocmd BufReadPost *
+\ if line("'\"") > 0 && line("'\"") <= line("$") |
+\ exe "normal g`\"" |
+\ endif
+
+endif " has("autocmd")
+
+let MRU_File = '/users/yunzshi/.vim_mru_files'
+let MRU_Max_Entries = 1000
+let MRU_Exclude_Files = '^/tmp/\.*'    " For MS-Windows
+"let MRU_Include_Files = '\.c$\|\.h$'
+
+let MRU_Window_Height = 15
+let MRU_Use_Current_Window = 1
+
+let MRU_Use_Current_Window = 1
+"let MRU_Auto_Close = 0
+let MRU_Add_Menu = 0
+let MRU_Max_Submenu_Entries = 15
+
+
+nmap <silent> <C-Down> :bn<CR>
+nmap <silent> <C-Up> :bp<CR>
+
+if filereadable("filenametags")
+    let g:LookupFile_TagExpr = '"./filenametags"'
+elseif filereadable("../filenametags")
+    let g:LookupFile_TagExpr = '"../filenametags"'
+elseif filereadable("../../filenametags")
+    let g:LookupFile_TagExpr = '"../../filenametags"'
+elseif filereadable("../../../filenametags")
+    let g:LookupFile_TagExpr = '"../../../filenametags"'
+endif
+
