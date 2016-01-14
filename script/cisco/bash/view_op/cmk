@@ -1,0 +1,28 @@
+#!/usr/bin/bash
+#! /usr/bin/expect -f
+vtn="/opt/vde/services/instances/vde_latest/bin/vde_tool -vno_sync"
+vt="/opt/vde/services/instances/vde_latest/bin/vde_tool"
+flag="--vforce --vtime 30d --vreason bugfix"
+
+rm  -f latest_start_compile_at*
+startname="latest_start_compile_at-"`date +%y-%b-%d-%h:%m:%s`
+touch $startname
+source dirchange -ios
+${vtn} mcp_ios_precommit -- -j20 cbr_super digi_sign=development  | tee cmk.log 
+source dirchange -cbr
+
+rm *
+
+sync_stat_name="latest_sync_out_start_at-"`date +%y-%b-%d-%h:%m:%s`
+touch $sync_start_name
+
+echo "sync_out cbrsup* and *.conf"
+${vt} ${flag} sync_out cbrsup*
+${vt} ${flag} sync_out packages.conf
+
+rm -f latest_compile_end_at*
+endname="latest_compile_end_at-"`date +%y-%b-%d-%h:%m:%s`
+touch $endname
+
+notify jelou "`pwd` cmk done"
+

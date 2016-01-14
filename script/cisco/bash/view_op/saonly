@@ -1,0 +1,17 @@
+#!/usr/bin/bash
+
+vtn="/opt/vde/services/instances/vde_latest/bin/vde_tool -Vno_sync"
+vt="/opt/vde/services/instances/vde_latest/bin/vde_tool"
+
+dir=`pwd`;
+[[ $dir =~ "(CSC.*[0-9]{5})" ]]
+ddts="${BASH_REMATCH[1]}"
+
+echo "dir is $dir ddts is $ddts"
+
+${vtn} prep-commit -html -saonly -coverity $ddts
+
+${vtn} prep-commit -coverity  $ddts -html
+
+$vtn prep-commit $ddts -html
+
