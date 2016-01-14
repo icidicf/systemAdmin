@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+
+
+if [ $# -ne 1 ]
+then
+    echo "pls assign diff file"
+else
+    diff=$1;
+    vtn="/opt/vde/services/instances/vde_latest/bin/vde_tool -Vno_sync"
+    vt="/opt/vde/services/instances/vde_latest/bin/vde_tool"
+
+    [[ $diff =~ "(CSC.*[0-9]{5})" ]]
+    ddts="${BASH_REMATCH[1]}"
+
+    echo "diff is $1 ddts is $ddts"
+
+    ${vt} cc_patch $1
+
+    ${vtn} prep-commit -html -saonly -coverity $ddts
+
+    ${vtn} prep-commit -coverity  $ddts -html
+
+    $vtn prep-commit $ddts -html
+fi

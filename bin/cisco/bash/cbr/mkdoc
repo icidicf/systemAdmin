@@ -1,0 +1,18 @@
+#!/usr/bin/bash
+#!/usr/bin/expect -f
+vtn="/opt/vde/services/instances/vde_latest/bin/vde_tool -Vno_sync"
+vt="/opt/vde/services/instances/vde_latest/bin/vde_tool"
+flag="--Vforce --Vtime 30d --Vreason bugfix"
+
+rm  -f latest_cmk_compile_at*
+startname="latest_cmk_compile_at-"`date +%Y-%b-%d-%H:%M:%S`
+touch $startname
+source dirchange -ios
+${vtn} make LEGOFILTER=sub_cmts_docsis.o -j40 ubrclc-k9lc-ms
+${vtn} mcp_ios_precommit -c -q -u -- -j40 DIGI_SIGN=DEVELOPMENT cbr_super
+source dirchange -binos
+
+${vtn} vt ls | grep patch
+
+
+notify jelou "`pwd` mkdoc done"

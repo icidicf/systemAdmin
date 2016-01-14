@@ -1,0 +1,25 @@
+#!/usr/local/bin/bash
+#!/usr/bin/expect -f 
+vtn="/opt/vde/services/instances/vde_latest/bin/vde_tool -Vno_sync"
+vt="/opt/vde/services/instances/vde_latest/bin/vde_tool"
+flag="--Vforce --Vtime 30d --Vreason bugfix"
+
+
+cur_path=`pwd`;
+
+
+ [[ $cur_path =~ "(CSC.*[0-9]{5})" ]]
+  ddts="${BASH_REMATCH[1]}"
+
+
+echo "current path is $cur_path ddts is $ddts"
+
+
+diff_name="$ddts-before_update-`date +%b-%d-%Hh-%Mm-%Ss`.diff"
+echo "back up diff before update, name is $diff_name "
+
+${vtn} cc_diff > $diff_name
+
+echo "do cc_update for $ddts" 
+
+${vtn} cc_update -m LATEST 

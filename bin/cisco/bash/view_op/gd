@@ -1,0 +1,86 @@
+#!/usr/bin/bash
+
+
+need_backup=0
+debugdiff_backup=0;
+if [ -n "$1" ]
+then
+    case "$1" in
+    -b)  need_backup=1;
+         echo "----need back the diff";;
+    -d)  debugdiff_backup=1;
+         echo "----need backup the debug diff";;
+    *)   echo "----not valide option";;
+    esac
+fi
+
+vtn="/opt/vde/services/instances/vde_latest/bin/vde_tool -Vno_sync"
+vt="/opt/vde/services/instances/vde_latest/bin/vde_tool"
+
+dir=`pwd`;
+
+[[ $dir =~ (CSC.*[0-9]{5}[^/]*)/ ]]
+view="${BASH_REMATCH[1]}"
+
+[[ $dir =~ (CSC.*[0-9]{5}) ]]
+ddts="${BASH_REMATCH[1]}"
+
+
+echo "----dir  is $dir"
+echo "----view is $view"
+echo "----ddts is $ddts"
+
+diffbackup=$view"_bak.diff"
+diffdebug=$view"_debug.diff"
+difftemp="temp.diff"
+destdir=/ws/jelou/diff_backup/$ddts
+
+echo "----saving diff to $difftemp"
+$vtn cc_diff > $difftemp
+
+
+if [ $need_backup -eq 1 ]
+then
+    echo "----need backup $diffbackup to $destdir"
+    if [ -e $destdir ]
+    then
+        echo "----$destdir is exist already"
+    else
+        echo "---$destdir is not exist create new one"
+        `mkdir $destdir -p`
+        if [ -e $destdir ]
+        then
+            echo "----create $destdir success"
+        else
+            echo "----creat $destdir failure"
+        fi
+    fi
+    echo "----copy $diffbackup to $destdir"
+    cp $difftemp $diffbackup
+    mv $diffbackup $destdir
+else
+    echo "----don't need backup $diffbackup"
+fi
+
+debugdir=/ws/jelou/diff_debug/$ddts
+if [ $debugdiff_backup -eq 1 ]
+then
+    echo "----need backup $diffdebug to $debugdir"
+    if [ -e $debugdir ]
+    then
+        echo "----$debugdir is exist already"
+    else
+        echo "---$debugdir is not exist create new one"
+        `mkdir $debugdir -p`
+        if [ -e $debugdir ]
+        then
+            echo "----create $debugdir success"
+        else
+            echo "----creat $debugdir failure"
+        fi
+    fi
+    echo "----diff temp $difftemp, copy $diffdebug to $debugdir"
+    cp $difftemp $diffdebug
+    mv $diffdebug $debugdir
+fi
+

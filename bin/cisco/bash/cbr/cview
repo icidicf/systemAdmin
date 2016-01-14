@@ -1,0 +1,256 @@
+#!/usr/local/bin/bash
+#!/usr/bin/expect -f
+vtn="/opt/vde/services/instances/vde_latest/bin/vde_tool -Vno_sync"
+vt="/opt/vde/services/instances/vde_latest/bin/vde_tool"
+flag="--Vforce --Vtime 30d --Vreason bugfix"
+cur_PID=$$
+bugid=$1
+appendix=$2
+
+usage()
+{
+    echo "**********************************************************"
+    echo "creat_view.sh Bugid"
+    exit 1
+}
+
+if [ $# = 0 ]
+then
+    usage
+fi
+
+echo "select code server"
+
+echo "1:cabu-bld15"
+echo "2:cabu-bld51"
+echo "3:bxb-ads-404"
+echo "4:cabu-bld8"
+echo "5:cabu-bld38"
+read sel_num
+case $sel_num in
+1)
+
+        code_server="cabu-bld15"
+        ;;
+2)
+        code_server="cabu-bld51"
+        ;;
+3)
+        code_server="bxb-ads-404"
+        ;;
+4)
+        code_server="cabu-bld8"
+        ;;
+5)
+        code_server="cabu-bld38"
+esac
+echo $code_server
+
+
+echo "input token for binos"
+read binos_token
+while [ -z $binos_token ]
+do
+       echo "token is invalid, try again"
+       read binos_token
+done
+echo -e "binos toekn is $binos_token\n"
+
+
+echo "select branch "
+echo "1 mcp_dev"
+echo "2 xe316"
+echo "3 xe317"
+echo "4 dev_lb"
+echo "5 dev_em"
+
+read sel_branch
+
+case $sel_branch in
+1)
+    binos_branch="main"
+    ios_branch="mcp_dev"
+    ;;
+2)
+    binos_branch="xe316_throttle"
+    ios_branch="v155_3_s_xe316_throttle"
+    ;;
+
+3)
+    binos_branch="xe317_throttle"
+    ios_branch="v155_1_s_xe317_throttle"
+    ;;
+4)
+    binos_branch="mcp_dev_lb_binos"
+    ios_branch="mcp_dev_lb_ios"
+    ;;
+5)
+    binos_branch="mcp_dev_em_binos"
+    ios_branch="mcp_dev_em_ios"
+    ;;
+esac
+
+
+
+echo "the branch is $binos_branch input label for binos and ios"
+read label
+if [ -z $label ]
+then
+        binos_label=LATEST
+        ios_label=LATEST
+else
+        binos_label=$label
+        ios_label=$label
+fi
+
+echo "build image(y/n)"
+read yn
+case $yn in
+y)
+        build=y
+        ;;
+n)
+        build=n
+        ;;
+esac
+echo $build
+echo "use bugid for check(y/n)"
+read yn
+case $yn in
+y)
+        bugid_flag="-bug "$bugid
+        ;;
+n)
+        bugid_flag=""
+        ;;
+esac
+echo $bugid_flag
+
+
+
+dirname=$1_$2_$code_server"_`date +%b_%d`"
+cd /ws/$USER/
+mkdir $dirname
+cd    $dirname
+mkdir ios
+mkdir binos
+view_name=$USER"-"$dirname
+work_space="/nobackup/"$USER
+echo $view_name
+echo $work_space
+
+
+
+
+cd    binos
+#${vtn}  ${flag} ws set --ws /ws/$USER/$bugid/binos --cs $code_server --role cable_binos --res cable-cpp
+~/bin/creat_binos_ws.sh $code_server $work_space
+echo ok
+${vtn}  ${flag} acme nw -sb binos -proj $binos_branch"%"$binos_label | tee binos_cmd
+${vt} abraxas-client.SignEngine_rev -r create-ticket -b CBR -k DEV -n 1000 -U $USER -P $binos_token |  tee -a binos_cmd
+echo "PATCH_DIR=/nobackup/"$USER"/"$HOSTNAME"__ws__"$USER"__"$dirname"__binos" > .VDEROOT/env.cs
+mkdir BUILD_LOGS
+mkdir linkfarm
+mkdir linkfarm/iso-cbr
+#mkdir linkfarm/iso-ubrsim
+#mkdir linkfarm/iso-ubrsim/mips-isos
+mkdir -p cable/cdman/infra/pclc-shim
+mkdir -p cable/vcms/proxy
+
+
+#if [ $binos_branch = "mcp_dev_em_binos" ]
+#then
+#    echo "this is em branch need patch FPGA fix"
+#    mkdir -p prebuilt/cable/firmware/CYLONS
+#    cd  prebuilt/cable/firmware/CYLONS
+#    cp /ws/jelou/fpga/raider_v2_0201_0004_Aug19_encrypted.bin raider_fpga_encrypted.bin
+#    cp /ws/jelou/fpga/raider_v2_0202_0004_Aug19.bin raider_fpga.bin
+#    ${vt} sync_in *
+#    cd ../../../..
+#fi
+#cp ~/bin/ng_process_makefile cable/cdman/makefile
+#cp ~/bin/ng_process_makefile cable/vcms/proxy/makefile
+#cp ~/bin/ng_lib_makefile cable/cdman/infra/makefile
+#cp ~/bin/ng_lib_makefile cable/cdman/infra/pclc-shim/makefile
+#cp ~/bin/ng_image_download.sh .
+#cp ~/bin/creg_makefile linkfarm/makefile
+
+cd    ..
+cd    ios
+~/bin/creat_ios_ws.sh $code_server $work_space
+#${vtn}  ${flag} ws set --ws `pwd` --cs $code_server --role cable_ios --res vob-src
+yes | ${vtn}  ${flag} start_task -a -d $work_space -f -v /vob/ios -t $dirname -b $ios_branch -l $ios_label $seed $bugid_flag | tee ios_cmd
+${vt}  ${flag} ct setview $view_name | tee -a ios_cmd
+echo "BINOS_ROOT=/nobackup/"$USER"/"$HOSTNAME"__ws__"$USER"__"$dirname"__binos" > .VDEROOT/env.cs
+
+#cp ~/makefile_ng makefile
+mkdir ios
+mkdir ios/sys/
+mkdir ios/sys/obj-4k-cr10k4-rp
+#mkdir ios/sys/src-4k-cr7200
+#mkdir ios/sys/obj-4k-cr7200
+#mkdir ios/sys/pas
+mkdir ios/sys/src-4k-cr10k-clc
+#mkdir ios/sys/wb_docsis
+#mkdir ios/sys/obj-g4-cr10k-clc
+mkdir ios/sys/src-4k-cr10k-rp
+#mkdir ios/sys/obj-4k-cr10k-clc
+#mkdir ios/sys/obj-g4-cr7200
+#mkdir ios/sys/pktcbl_client
+#mkdir ios/sys/spa
+mkdir ios/sys/obj-ppc-cr10k5-rp
+#mkdir ios/sys/obj-x86_64bi-ubr-iosd
+mkdir ios/sys/obj-mips-ubr-clc
+#mkdir ios/sys/obj-ppc-ubr-clc
+#mkdir ios/sys/obj-mips64-ubr-clc
+mkdir -p ios/sys/src-ubr/apps/loadbalance
+#mkdir cisco.comp
+#mkdir cisco.comp/depi/
+#mkdir cisco.comp/depi/include
+#mkdir cisco.comp/depi/include/reg
+#mkdir cisco.comp/depi/src
+#mkdir cisco.comp/depi/src/cli
+#mkdir cisco.comp/depi/src/mib
+#mkdir cisco.comp/depi/src/avp
+#mkdir cisco.comp/depi/src/proc
+cd ios/sys/
+#mv ../../../branch_label_and_token ./
+
+echo "binos_branch is $binos_branch ios_branch is $ios_branch coder server is $code_server" | tee  branch_label_and_token
+echo -e "`date` label  for binos and ios is $binos_label token is $binos_token\n" | tee -a branch_label_and_token
+readcode
+
+if [ $build = y ]
+    then
+    echo "Start building ..."
+    echo "current path is `pwd`"
+    #${vtn}  ${flag} mcp_ios_precommit -- -j6 ubrsim_super
+    #${vtn}  ${flag} mcp_ios_precommit -- -j6 ubr_super
+    #${vtn}  ${flag} mcp_ios_precommit -- -j40 cbr_super DIGI_SIGN=DEVELOPMENT | tee log
+    ${vtn}  mcp_ios_precommit -- -j20 cbr_super DIGI_SIGN=DEVELOPMENT | tee first_compile.log
+
+    notify  jelou "$dirname image has compiled"
+
+    cd ../../../binos/linkfarm/iso-cbr/
+    echo "change dir cur dir is `pwd`"
+    if [ ! -f makefile ]
+        then
+        cp /ws/jelou/playground/cache/makefile ./
+        echo "cp done cur path is `pwd`"
+    fi
+
+    echo "current path is `pwd`"
+    ls -l makefile
+    ${vt} ${flag} sync_in makefile
+
+    echo "image has copy  to /auto/tftp-sjc-users2/crdc_cable/$(USER)/"
+    ${vtn} ${flag} make vto_creg
+
+    echo "sync_out cbrsup* and *.conf"
+    ${vt} ${flag} sync_out cbrsup*
+    ${vt} ${flag} sync_out packages.conf
+
+    notify  jelou "$dirname image has sync_out"
+
+fi
+
